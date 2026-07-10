@@ -1,6 +1,14 @@
 terraform {
   required_version = ">= 1.3.0"
 
+  cloud {
+    organization = "alderic-hoarau"
+
+    workspaces {
+      name = "github-repo-tf"
+    }
+  }
+
   required_providers {
     github = {
       source  = "integrations/github"

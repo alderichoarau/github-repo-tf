@@ -53,6 +53,21 @@ resource "github_branch_protection" "main" {
 }
 
 # -------------------------------------------------------
+# Dependabot alerts
+# -------------------------------------------------------
+resource "github_repository_vulnerability_alerts" "main" {
+  repository = github_repository.repo.name
+}
+
+# -------------------------------------------------------
+# Dependabot security updates
+# -------------------------------------------------------
+resource "github_repository_dependabot_security_updates" "main" {
+  repository = github_repository.repo.name
+  enabled    = true
+}
+
+# -------------------------------------------------------
 # Repository collaborators
 # -------------------------------------------------------
 resource "github_repository_collaborator" "collaborators" {

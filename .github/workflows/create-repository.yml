@@ -19,6 +19,7 @@ env:
   TF_VAR_github_owner: ${{ secrets.GH_OWNER }}
   TF_VAR_github_token: ${{ secrets.GH_TOKEN }}
   TF_VAR_gitignore_template: "Terraform"
+  TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
   TF_VAR_repo_name: ${{ inputs.repo_name }}
   TF_VAR_repo_description: ${{ inputs.repo_description }}
   TF_VAR_collaborators: "{}"

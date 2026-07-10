@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
       TF_VAR_github_token: "dummy"
       TF_VAR_github_owner: "dummy"
       TF_VAR_repo_name: "dummy"
@@ -89,6 +90,7 @@ jobs:
       pull-requests: write
 
     env:
+      TF_TOKEN_app_terraform_io: ${{ secrets.TF_API_TOKEN }}
       TF_VAR_github_owner: ${{ secrets.GH_OWNER }}
       TF_VAR_github_token: ${{ secrets.GH_TOKEN }}
       TF_VAR_gitignore_template: "Terraform"
