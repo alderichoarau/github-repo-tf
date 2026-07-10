@@ -65,6 +65,8 @@ resource "github_repository_vulnerability_alerts" "main" {
 resource "github_repository_dependabot_security_updates" "main" {
   repository = github_repository.repo.name
   enabled    = true
+
+  depends_on = [github_repository_vulnerability_alerts.main]
 }
 
 # -------------------------------------------------------
