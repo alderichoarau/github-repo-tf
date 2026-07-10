@@ -1,0 +1,15 @@
+# Fichiers Terraform à ne pas versionner
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfstate.lock.info
+*.tfplan
+
+# Variables sensibles (contient le token GitHub !)
+terraform.tfvars
+
+# Claude Code local settings
+.claude/
+
+# Liste locale des collaborateurs (à copier dans GitHub Actions Variables)
+collaborators.txt

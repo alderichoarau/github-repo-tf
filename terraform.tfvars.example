@@ -1,0 +1,8 @@
+# Copie ce fichier en "terraform.tfvars" et remplis les valeurs
+# IMPORTANT : N'ajoute jamais terraform.tfvars dans ton repo Git (contient ton token !)
+
+github_token       = "ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+github_owner       = "ton-username-github"
+repo_name          = "mon-nouveau-repo"
+repo_description   = "Description de mon super projet"
+gitignore_template = "Terraform"
