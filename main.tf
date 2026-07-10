@@ -13,8 +13,8 @@ resource "github_repository" "repo" {
   gitignore_template = var.gitignore_template
 
   has_issues   = true
-  has_projects = false
-  has_wiki     = false
+  has_projects = true
+  has_wiki     = true
 
   # Automatically delete merged branches after a PR is merged
   delete_branch_on_merge = true
@@ -31,6 +31,13 @@ resource "github_branch_protection" "main" {
   required_pull_request_reviews {
     required_approving_review_count = 1
     dismiss_stale_reviews           = true
+    require_code_owner_reviews      = true
+  }
+
+  # Require the CI "validate" job to pass before merging
+  required_status_checks {
+    strict   = true
+    contexts = ["validate"]
   }
 
   # Block direct pushes to main (even for admins)
@@ -41,6 +48,8 @@ resource "github_branch_protection" "main" {
 
   # Prevent deletion of the main branch
   allows_deletions = false
+
+  depends_on = [github_repository_file.ci_workflow]
 }
 
 # -------------------------------------------------------
@@ -73,14 +82,50 @@ resource "github_repository_file" "ci_workflow" {
         branches: [ "main" ]
 
     jobs:
-      build:
+      validate:
         runs-on: ubuntu-latest
 
         steps:
           - name: Checkout code
-            uses: actions/checkout@v4
+            uses: actions/checkout@v7
 
           - name: Example step
             run: echo "Add your build/test steps here!"
+  EOT
+}
+
+# -------------------------------------------------------
+# CODEOWNERS
+# -------------------------------------------------------
+resource "github_repository_file" "codeowners" {
+  repository          = github_repository.repo.name
+  branch              = "main"
+  file                = ".github/CODEOWNERS"
+  commit_message      = "chore: add CODEOWNERS"
+  overwrite_on_create = true
+
+  content = <<-EOT
+    * @alderichoarau
+  EOT
+}
+
+# -------------------------------------------------------
+# Dependabot configuration
+# -------------------------------------------------------
+resource "github_repository_file" "dependabot" {
+  repository          = github_repository.repo.name
+  branch              = "main"
+  file                = ".github/dependabot.yml"
+  commit_message      = "chore: add Dependabot configuration"
+  overwrite_on_create = true
+
+  content = <<-EOT
+    version: 2
+
+    updates:
+      - package-ecosystem: "github-actions"
+        directory: "/"
+        schedule:
+          interval: "weekly"
   EOT
 }
