@@ -107,13 +107,13 @@ jobs:
         with:
           terraform_version: "~> 1.9"
 
-      - name: Terraform Init
-        run: terraform init
-
       # Use a workspace scoped to this PR so concurrent PR plans never
       # collide with each other or with a real repo-factory workspace.
-      - name: Select or create workspace
-        run: terraform workspace select -or-create "pr-preview-${{ github.event.pull_request.number }}"
+      - name: Set dedicated workspace name
+        run: echo "TF_WORKSPACE=pr-preview-${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
+
+      - name: Terraform Init
+        run: terraform init
 
       - name: Terraform Plan
         run: terraform plan -no-color 2>&1 | tee plan.txt
