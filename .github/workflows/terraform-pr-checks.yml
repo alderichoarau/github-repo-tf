@@ -107,13 +107,18 @@ jobs:
         with:
           terraform_version: "~> 1.9"
 
-      # Use a workspace scoped to this PR so concurrent PR plans never
-      # collide with each other or with a real repo-factory workspace.
-      - name: Set dedicated workspace name
-        run: echo "TF_WORKSPACE=pr-preview-${{ github.event.pull_request.number }}" >> "$GITHUB_ENV"
-
+      # Point init at the permanent bootstrap workspace so it never has to
+      # guess/prompt among the other tagged workspaces.
       - name: Terraform Init
         run: terraform init
+        env:
+          TF_WORKSPACE: github-repo-bootstrap
+
+      # Now switch to (or create) a workspace scoped to this PR, so
+      # concurrent PR plans never collide with each other or with a real
+      # repo-factory workspace.
+      - name: Select or create PR workspace
+        run: terraform workspace select -or-create "pr-preview-${{ github.event.pull_request.number }}"
 
       - name: Terraform Plan
         run: terraform plan -no-color 2>&1 | tee plan.txt

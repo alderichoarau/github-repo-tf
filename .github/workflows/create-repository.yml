@@ -41,19 +41,21 @@ jobs:
         with:
           terraform_version: "~> 1.9"
 
-      # Tell Terraform which HCP Terraform workspace to target *before*
-      # init, so it never has to guess/prompt among the other tagged
-      # workspaces. Gives this repo its own state, isolated from every
-      # other repo created by this workflow.
-      - name: Compute dedicated workspace name
-        run: |
-          workspace_name="repo-$(echo '${{ inputs.repo_name }}' | tr -c 'A-Za-z0-9_-' '-')"
-          echo "TF_WORKSPACE=$workspace_name" >> "$GITHUB_ENV"
-
-      # Download providers and initialize the working directory
-      # (creates the workspace above if it doesn't exist yet)
+      # Point init at the permanent bootstrap workspace so it never has to
+      # guess/prompt among the other tagged workspaces (TF_WORKSPACE only
+      # works if the workspace already exists, so it can't target the new
+      # per-repo one directly here).
       - name: Terraform Init
         run: terraform init
+        env:
+          TF_WORKSPACE: github-repo-bootstrap
+
+      # Now switch to (or create) this repo's own dedicated workspace, so
+      # creating it never touches the state of a previously created repo.
+      - name: Select or create dedicated workspace
+        run: |
+          workspace_name="repo-$(echo '${{ inputs.repo_name }}' | tr -c 'A-Za-z0-9_-' '-')"
+          terraform workspace select -or-create "$workspace_name"
 
       # Fail if any file is not properly formatted
       - name: Terraform Format Check
