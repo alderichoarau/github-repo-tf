@@ -1,11 +1,15 @@
 terraform {
-  required_version = ">= 1.3.0"
+  required_version = ">= 1.4.0"
 
   cloud {
     organization = "alderic-hoarau"
 
+    # Each repo created by this configuration gets its own workspace
+    # (selected/created dynamically in CI via `terraform workspace select -or-create`),
+    # so that creating repo B never touches repo A's state.
+    # Workspaces must carry this tag (new ones get it automatically).
     workspaces {
-      name = "github-repo-tf"
+      tags = ["github-repo-factory"]
     }
   }
 

@@ -28,7 +28,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: "~> 1.3"
+          terraform_version: "~> 1.9"
 
       - name: Terraform Format Check
         run: terraform fmt -check -recursive
@@ -105,10 +105,15 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: "~> 1.3"
+          terraform_version: "~> 1.9"
 
       - name: Terraform Init
         run: terraform init
+
+      # Use a workspace scoped to this PR so concurrent PR plans never
+      # collide with each other or with a real repo-factory workspace.
+      - name: Select or create workspace
+        run: terraform workspace select -or-create "pr-preview-${{ github.event.pull_request.number }}"
 
       - name: Terraform Plan
         run: terraform plan -no-color 2>&1 | tee plan.txt

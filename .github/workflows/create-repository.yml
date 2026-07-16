@@ -39,11 +39,18 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
-          terraform_version: "~> 1.3"
+          terraform_version: "~> 1.9"
 
       # Download providers and initialize the working directory
       - name: Terraform Init
         run: terraform init
+
+      # Give this repo its own HCP Terraform workspace so creating a new
+      # repo never touches the state of a previously created one.
+      - name: Select or create dedicated workspace
+        run: |
+          workspace_name="repo-$(echo '${{ inputs.repo_name }}' | tr -c 'A-Za-z0-9_-' '-')"
+          terraform workspace select -or-create "$workspace_name"
 
       # Fail if any file is not properly formatted
       - name: Terraform Format Check
